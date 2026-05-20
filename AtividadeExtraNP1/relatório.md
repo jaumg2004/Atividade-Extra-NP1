@@ -4,7 +4,7 @@
 
 Este projeto utiliza dados de imóveis de King County com o objetivo de prever o preço de venda das casas a partir de características físicas e informações demográficas associadas à região. A base principal contém informações como preço, quantidade de quartos, banheiros, área construída, área do terreno, localização, condição do imóvel e qualidade da construção.
 
-Além dos dados físicos, também foi utilizada uma base demográfica associada ao `zipcode`. Essa combinação permite que o modelo considere não apenas as características internas da casa, mas também o contexto regional em que ela está inserida.
+Além dos dados físicos, também foi utilizada uma base demográfica associada ao `zipcode`. Essa combinação permite que o modelo considere não apenas as características internas da casa, mas também o contexto regional em que ela está inserida. Após a união dos datasets, não foram encontrados valores ausentes relevantes, indicando que todos os zipcodes do dataset de casas possuem informações demográficas correspondentes.
 
 ---
 
