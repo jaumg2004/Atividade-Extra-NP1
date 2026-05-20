@@ -268,7 +268,7 @@ As variáveis com maior contribuição na análise por PCA foram:
 | `edctn_bchlr_dgre_qty` | Quantidade de pessoas com bacharelado. |
 
 <p align="center">
-<img src="imagens/pca_variancia.png" width="720">
+<img src="imagens/pca_features_relevantes.png" width="720">
 </p>
 
 <p align="center"><em>Features com maior contribuição segundo a análise por PCA.</em></p>
