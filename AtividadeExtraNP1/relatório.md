@@ -208,34 +208,82 @@ Para resolver o problema de previsão de preços, foi desenvolvido um modelo de 
 
 ---
 
-### 2.a Variáveis importantes
+### 2.a Análise das features mais relevantes
 
-A importância das variáveis foi analisada utilizando a técnica de `Permutation Importance`. Essa técnica mede a relevância de cada feature ao embaralhar seus valores e verificar quanto o desempenho do modelo piora.
+A análise das features mais relevantes foi realizada utilizando duas abordagens complementares: **Permutation Importance** e **PCA**. Essas duas técnicas ajudam a entender a importância das variáveis, porém possuem objetivos diferentes.
 
-Se o erro aumenta muito ao embaralhar uma variável, isso significa que ela era importante para o modelo. Se o desempenho quase não muda, significa que aquela variável teve pouca influência nas previsões.
+A **Permutation Importance** foi utilizada para identificar quais variáveis mais influenciam diretamente o desempenho do modelo MLP na previsão do preço dos imóveis. Essa técnica embaralha os valores de cada variável individualmente e observa o quanto o desempenho do modelo piora. Dessa forma, se o erro aumenta muito após o embaralhamento de uma variável, isso indica que ela possui grande importância para a previsão.
 
 <p align="center">
 <img src="imagens/mlp_features_relevantes.png" width="720">
 </p>
 
-<p align="center"><em>Features mais relevantes para o modelo MLP.</em></p>
+<p align="center"><em>Features mais relevantes para o modelo MLP segundo a Permutation Importance.</em></p>
 
-As features mais relevantes foram:
+As features mais relevantes segundo a Permutation Importance foram:
 
 | Feature | Interpretação |
 |---|---|
-| `edctn_some_clg_qty` | Representa quantidade de pessoas com algum nível de ensino superior na região. |
+| `edctn_some_clg_qty` | Representa a quantidade de pessoas com algum nível de ensino superior na região. |
 | `per_bchlr` | Percentual de pessoas com bacharelado. |
 | `sqft_above` | Área construída acima do nível do solo. |
 | `ppltn_qty` | Quantidade populacional da região. |
 | `non_farm_qty` | Quantidade de população não rural. |
 | `bathrooms` | Quantidade de banheiros do imóvel. |
-| `bedrooms` | Quantidade de quartos. |
-| `bedrooms_per_bathroom` | Relação entre quartos e banheiros. |
+| `bedrooms` | Quantidade de quartos do imóvel. |
+| `bedrooms_per_bathroom` | Relação entre a quantidade de quartos e banheiros. |
 
-Essas variáveis mostram que o modelo considerou tanto aspectos físicos quanto aspectos regionais. A presença de variáveis como `sqft_above`, `bathrooms` e `bedrooms` indica que tamanho e conforto do imóvel são importantes. Já variáveis como `per_bchlr`, `ppltn_qty` e `edctn_some_clg_qty` mostram que o perfil demográfico da região também contribui para explicar o preço.
+Os resultados mostram que o modelo considerou tanto características físicas do imóvel quanto informações socioeconômicas e demográficas da região. Variáveis como `sqft_above`, `bathrooms` e `bedrooms` indicam a influência do tamanho e do conforto da residência. Já variáveis como `edctn_some_clg_qty`, `per_bchlr`, `ppltn_qty` e `non_farm_qty` mostram que o perfil da região também contribui para a previsão do preço.
 
-Portanto, o preço dos imóveis foi influenciado por uma combinação de fatores estruturais e socioeconômicos.
+Além da Permutation Importance, também foi aplicada a técnica de **PCA**, ou Análise de Componentes Principais. O PCA é uma técnica não supervisionada que busca reduzir a dimensionalidade dos dados e identificar quais variáveis mais contribuem para a variabilidade geral do conjunto de dados.
+
+Diferentemente da Permutation Importance, o PCA não utiliza diretamente a variável alvo `price`. Portanto, ele não indica necessariamente quais variáveis mais influenciam a previsão do preço, mas sim quais variáveis carregam mais informação estrutural dentro do conjunto de dados.
+
+No PCA, os dados foram previamente padronizados, pois essa técnica é sensível à escala das variáveis. Em seguida, foram calculados os componentes principais e a variância explicada acumulada. O resultado mostrou que foram necessários 13 componentes principais para explicar aproximadamente 90% da variância dos dados.
+
+<p align="center">
+<img src="imagens/pca_variancia_explicada.png" width="720">
+</p>
+
+<p align="center"><em>Variância explicada acumulada pelos componentes principais do PCA.</em></p>
+
+As variáveis com maior contribuição na análise por PCA foram:
+
+| Feature | Interpretação |
+|---|---|
+| `sqft_above` | Área construída acima do nível do solo. |
+| `sqft_living` | Área habitável da casa. |
+| `edctn_some_clg_qty` | Quantidade de pessoas com algum nível de ensino superior. |
+| `edctn_assoc_dgre_qty` | Quantidade de pessoas com grau associado. |
+| `bathrooms` | Quantidade de banheiros. |
+| `sqft_total` | Soma entre área habitável e área do terreno. |
+| `medn_hshld_incm_amt` | Renda média domiciliar da região. |
+| `ppltn_qty` | Quantidade populacional da região. |
+| `edctn_less_than_9_qty` | Quantidade de pessoas com escolaridade inferior ao 9º ano. |
+| `lat` | Latitude do imóvel. |
+| `edctn_high_schl_qty` | Quantidade de pessoas com ensino médio. |
+| `per_prfsnl` | Percentual de profissionais na região. |
+| `sqft_lot` | Área total do terreno. |
+| `sqft_lot15` | Área média dos terrenos dos 15 imóveis mais próximos. |
+| `edctn_bchlr_dgre_qty` | Quantidade de pessoas com bacharelado. |
+
+<p align="center">
+<img src="imagens/pca_variancia.png" width="720">
+</p>
+
+<p align="center"><em>Features com maior contribuição segundo a análise por PCA.</em></p>
+
+Comparando os resultados das duas análises, observa-se que algumas variáveis aparecem como relevantes em ambas as abordagens, como `sqft_above`, `edctn_some_clg_qty` e `ppltn_qty`. Isso reforça que essas variáveis possuem grande importância tanto para a estrutura geral dos dados quanto para o desempenho do modelo de previsão.
+
+A variável `sqft_above`, por exemplo, aparece com destaque nas duas análises. Isso indica que a área construída acima do nível do solo é uma informação importante para representar o imóvel e também influencia diretamente a previsão do preço. Da mesma forma, `edctn_some_clg_qty` e `ppltn_qty` mostram que o contexto regional e demográfico também tem papel relevante no comportamento dos preços.
+
+Por outro lado, algumas variáveis aparecem com maior destaque apenas no PCA, como `sqft_living`, `sqft_total`, `medn_hshld_incm_amt`, `lat`, `sqft_lot` e `sqft_lot15`. Isso indica que essas variáveis explicam bem a variação geral do conjunto de dados, mas não necessariamente são as que mais impactam diretamente a previsão final do modelo MLP.
+
+Já variáveis como `per_bchlr` e `non_farm_qty` aparecem com maior destaque na Permutation Importance. Isso mostra que, mesmo que essas variáveis não sejam as maiores responsáveis pela variabilidade global dos dados, elas possuem influência relevante no desempenho preditivo do modelo.
+
+Dessa forma, as duas análises se complementam. A **Permutation Importance** é mais adequada para interpretar quais variáveis realmente influenciam a previsão do preço dos imóveis, pois avalia o impacto direto de cada feature no desempenho do modelo. Já o **PCA** ajuda a entender quais variáveis concentram maior quantidade de informação dentro do conjunto de dados e quais atributos possuem maior peso na estrutura geral da base.
+
+Portanto, para explicar o comportamento do modelo de previsão, a Permutation Importance deve ser considerada a análise principal. O PCA funciona como uma análise complementar, útil para confirmar padrões, identificar variáveis estruturalmente importantes e observar possíveis redundâncias entre atributos físicos, geográficos e demográficos.
 
 ---
 
